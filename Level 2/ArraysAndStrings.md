@@ -680,3 +680,229 @@ return ans;
 
 ```
 
+### Max chunks to make array sorted(https://leetcode.com/problems/max-chunks-to-make-sorted/)
+
+```
+You are given an integer array arr of length n that represents a permutation of the integers in the range [0, n - 1].
+
+We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
+
+Return the largest number of chunks we can make to sort the array.
+
+ 
+
+Example 1:
+
+Input: arr = [4,3,2,1,0]
+Output: 1
+Explanation:
+Splitting into two or more chunks will not return the required result.
+For example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn't sorted.
+Example 2:
+
+Input: arr = [1,0,2,3,4]
+Output: 4
+Explanation:
+We can split into two chunks, such as [1, 0], [2, 3, 4].
+However, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.
+ 
+
+Constraints:
+
+n == arr.length
+1 <= n <= 10
+0 <= arr[i] < n
+All the elements of arr are unique.
+
+
+Solution:-
+First thing come into mind is you will divide the array in array.length parts. But it doesn't work because on sorting those partitions doesn't return a sorted array
+Ex :- [4, 3, 2, 1, 0]
+    Divide :- [4], [3], [2], [1], [0] // Can't be sorted
+
+If it is to find minimum number of chunks then it will be always the complete array itself 
+
+Correct approach(Chaining method):- With this method we can divide array into different chunks.
+As it is given in question that array will always be filled with the values of 0 to n-1.
+so for ex:- [1, 0, 2, 3, 4]
+
+The value present at 0th index is 1 and its impact in the array will be till 1st index, Going forward the value present on 1st index is 0 and its impact in the array will also till 1st index. We can store this as chunk. 
+    [1, 0]
+
+Going forward the value present at 2nd index is 2 and its impact is also till 2. So this can be a chunk
+Similarly we can find chunks which on sorting gives a sorted array.
+
+Step 1:- Define a max variable with 0 and chunkCount with 0
+
+Step 2:- Start looping on array keep updating the max by comparing the values with arr[i].
+  At anytime i becomes equal to max then increment the chunkCount
+
+Step 3:- Return chunkCount;
+
+class Solution {
+    public int maxChunksToSorted(int[] arr) {
+        int max = 0;
+        int count = 0;
+        
+        for (int i = 0; i < arr.length; i++) {
+            max = Math.max(max, arr[i]);
+            
+            if (i == max) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+}
+```
+
+### Max chunks to make array sorted -|| (https://leetcode.com/problems/max-chunks-to-make-sorted-ii/)
+
+```
+You are given an integer array arr.
+
+We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
+
+Return the largest number of chunks we can make to sort the array.
+
+ 
+
+Example 1:
+
+Input: arr = [5,4,3,2,1]
+Output: 1
+Explanation:
+Splitting into two or more chunks will not return the required result.
+For example, splitting into [5, 4], [3, 2, 1] will result in [4, 5, 1, 2, 3], which isn't sorted.
+Example 2:
+
+Input: arr = [2,1,3,4,4]
+Output: 4
+Explanation:
+We can split into two chunks, such as [2, 1], [3, 4, 4].
+However, splitting into [2, 1], [3], [4], [4] is the highest number of chunks possible.
+
+Constraints:
+
+1 <= arr.length <= 2000
+0 <= arr[i] <= 108
+
+
+Solution :- So, Here also we can apply our chaining process again but with a slight change in it. 
+
+Here we need to create a leftMax array and a right min array
+
+For ex:- 
+  arr = [30, 10, 20, 40, 60, 50, 75, 70]
+
+Now here we need to divide this array in max chunks that it gets sorted.
+Create a leftMAx arrray 
+
+  leftMax = [30, 30, 30, 40, 60, 60, 75, 75]
+
+Create a rightMin array(Add a +Infinite for last element)
+
+  rightMin = [10, 10, 20, 40, 50, 50, 70, 70, +Infinite]
+
+Now start traversing with leftMax array And check if 
+  leftMax <= rightMin[i+1]  ---> count++;
+
+return count;
+
+Why this is working :- In this approach we are checking the impact of max value inside a chunk that till which index it exists. Also covering the case of equal values. Means that ones the max value of chunk become lesser or equal to its rightMin then we should seperate the chunk. Equal values are also seperated as per the question given.
+
+Code:- We can manage leftMax in a variable and rightMin as a array
+
+class Solution {
+    public int maxChunksToSorted(int[] arr) {
+        int lmax = Integer.MIN_VALUE;
+        int count = 0;
+        
+        int rMin[] = new int[arr.length+1];
+        
+        int min = Integer.MAX_VALUE;
+        rMin[rMin.length-1] = min;
+        for (int i = rMin.length-2; i>=0; i--) {
+            min = Math.min(min, arr[i]);
+            rMin[i] = min;
+        }
+        
+        for (int i = 0; i<arr.length; i++) {
+            lmax = Math.max(lmax, arr[i]);
+            if (lmax <= rMin[i+1]) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+}
+```
+
+### Partition Labels(https://leetcode.com/problems/partition-labels/)
+
+```
+You are given a string s. We want to partition the string into as many parts as possible so that each letter appears in at most one part.
+
+Note that the partition is done so that after concatenating all the parts in order, the resultant string should be s.
+
+Return a list of integers representing the size of these parts.
+
+ 
+
+Example 1:
+
+Input: s = "ababcbacadefegdehijhklij"
+Output: [9,7,8]
+Explanation:
+The partition is "ababcbaca", "defegde", "hijhklij".
+This is a partition so that each letter appears in at most one part.
+A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits s into less parts.
+Example 2:
+
+Input: s = "eccbbbbdec"
+Output: [10]
+ 
+
+Constraints:
+
+1 <= s.length <= 500
+s consists of lowercase English letters.
+
+
+Solution :- Create a Hashmap with keys as string character and values as last occuring index. Then initialise last_index with zero  in starting and update it accordingly. So start looping through the string and then update the last_index according to str[i]. Then loop till i != last_index and any of the character doesn't update last_index as there last_index are lesser then the previous character. Ones i becomes equal to last_index update the ans arraylist and prev. Now prev, is firstly initialised with -1, then it is being to used to keep track of the string length which can be partitioned. That's why when i becomes equal to last_index then update the ans by adding last_index - prev in array and updating the prev with current last_index.
+
+class Solution {
+    public List<Integer> partitionLabels(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        
+        for (int i = s.length()-1; i >= 0; i--) {
+            if (map.containsKey(s.charAt(i))) {
+                continue;
+            } else {
+                map.put(s.charAt(i), i);
+            }
+        }
+        
+        
+        int last_index = 0;
+        int prev = -1;
+        String str = "";
+        List<Integer> ans = new ArrayList<>();
+        
+        for (int i = 0; i <s.length(); i++) {
+            if (last_index < map.get(s.charAt(i))) {
+                last_index = map.get(s.charAt(i));
+            }
+            if (i == last_index) {
+                ans.add(last_index - prev);
+                prev = last_index;
+            }
+        }
+        
+        return ans;
+    }
+}
+
+```
