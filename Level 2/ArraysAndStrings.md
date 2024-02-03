@@ -906,3 +906,204 @@ class Solution {
 }
 
 ```
+
+### Partition Array into Disjoint Intervals(https://leetcode.com/problems/partition-array-into-disjoint-intervals/)
+
+```
+Given an integer array nums, partition it into two (contiguous) subarrays left and right so that:
+
+Every element in left is less than or equal to every element in right.
+left and right are non-empty.
+left has the smallest possible size.
+Return the length of left after such a partitioning.
+
+Test cases are generated such that partitioning exists.
+
+ 
+
+Example 1:
+
+Input: nums = [5,0,3,8,6]
+Output: 3
+Explanation: left = [5,0,3], right = [8,6]
+Example 2:
+
+Input: nums = [1,1,1,0,6,12]
+Output: 4
+Explanation: left = [1,1,1,0], right = [6,12]
+ 
+
+Constraints:
+
+2 <= nums.length <= 105
+0 <= nums[i] <= 106
+There is at least one valid answer for the given input.
+
+
+Solution:- Using same approach as Max chunks to make array sorted -|| of chaining  method over here
+
+For example:- 
+[10, 6, 9, 3, 12, 15, 11, 13]
+
+Create one leftMax which gives you the idea about the index till which impact of maximum value exists
+leftMax : [10, 10, 10, 10, 12, 15, 15, 15]
+
+Create one rightMin array which gives you the idea about the index till which impact of minimum value exists
+rightMin : [3, 3, 3, 3, 11, 11, 11, 13, +Infinite]
+
+Now start comparing both the arrays, by starting a loop on leftmax 
+
+i = 0
+leftMax[i] = 10
+Compare leftMax[i] <= rightMin[i+1]; ---> This condition checks if impact of current leftMax is remaining or not on the given index. 
+If condition satifies then we got the answer and by storing index we can break from loop
+
+At the end we can return index + 1
+
+class Solution {
+    public int partitionDisjoint(int[] nums) {
+        
+        int n = nums.length;
+        
+        int[] rightMin = new int[n +1];
+        rightMin[n] = Integer.MAX_VALUE;
+        
+        for (int i = n-1; i >= 0; i--) {
+            rightMin[i] = Math.min(nums[i], rightMin[i+1]);
+        }
+        
+        int lMax = Integer.MIN_VALUE;
+        int ans = 0;
+        for (int i = 0; i < nums.length; i++) {
+            lMax = Math.max(lMax, nums[i]);
+            
+            if (lMax <= rightMin[i+1]) {
+                ans = i;
+                break;
+            }
+        }
+        
+        return ans+1;
+    }
+}
+
+Optimised approach with O(1) space complexity:
+
+Approach:- Maintain two variables as greater and leftMax and find the partition
+
+for example :- 
+[7, 3, 9, 5, 10, 1, 15, 16, 19, 14, 30]
+
+Now here if we see a sorted array of this then we will get to know about the index on which impact of each element exists.
+
+[1, 3, 5, 7, 9, 10, 14, 15, 16, 19, 30]
+
+Now create a leftmax intialiasing it with arr[0], and a greater variable initialising it with arr[0] and answer variable initialising it with 0
+
+In every iteration check if leftMax < arr[i] else if greater > arr[i]
+
+Why? By checking leftMax > arr[i], we can update the leftMax and also the answer because at this point the impact of the particular leftMAx ends and in this way we can get our partition. If this condition doesn't matches then we need to check greater < arr[i] and here we can update our greater value, So, that it can be used as leftMax in future because there can be chances that a value present less than the current leftMax
+
+for i =0;
+arr[i] = 7
+since leftmax is not > arr[i] and greater is not < arr[i] continue
+
+or i= 1;
+arr[i] = 3
+since leftMax is > arr[i] and greater is not < arr[i] so we can add it in our answer and get our first partition and also update leftMax to greater
+
+i = 2;
+arr[i] = 9
+since leftMax is not > arr[i]  but greater is < arr[i] so, we can update the greater as 9
+
+i = 3
+arr[i] = 5
+Now here we encounter the condition that leftMax > arr[i]. This means that 5 also wants to get included in the left array itself. Now we update our second partition and also leftMax as greater. Because of this scenario we need greater in this approach.
+
+And so on...
+
+int n = nums.length;
+int leftMax = nums[0];
+int greater = nums[0];
+int ans = 0;
+
+
+for (int i = 0; i < nums.length; i++) {
+  if (nums[i] > greater) {
+    greater = nums[i];
+  } else if (nums[i] < leftMax) {
+    ans = i;
+    leftMax = greater;
+  }
+}
+
+return ans + 1;
+
+```
+
+### Find the number of jumps to reach X in the number line from zero(https://www.geeksforgeeks.org/find-the-number-of-jumps-to-reach-x-in-the-number-line-from-zero/)
+
+```
+Given an integer X. The task is to find the number of jumps to reach a point X in the number line starting from zero. 
+Note: The first jump made can be of length one unit and each successive jump will be exactly one unit longer than the previous jump in length. It is allowed to go either left or right in each jump. 
+Examples: 
+ 
+
+Input : X = 8
+Output : 4
+Explanation : 
+0 -> -1 -> 1 -> 4-> 8 are possible stages.
+
+Input : X = 9
+Output : 5
+Explanation : 
+0 -> -1 -> -3 -> 0 -> 4-> 9 are 
+possible stages
+
+
+Approach :- 
+Make the jumps as minimum as possible. 
+Start jumping from 0 at number line and then increment jump gradually one by one until you reach the input pr reach ahead the input. Ones you reach ahead the input there will be chances that some jumps can be done at left side so that you can reach back to the input
+
+For example :- 8
+0 -> +1(+1) -> +3(+2) -> +6(+4) -> +10 
+
+Now we are at the point where it is ahead then the given input
+So, we need to take few steps to the left
+So, what we can do is we can subtract the input from achieved sum. This is needed to be done to know how much steps we need to take left side. 
+
+Post subtraction if value is even then we get our jumps
+
+if value is odd then add one more jump and again subtract the input from achieved sum
+Post substraction if value is even then we get our jumps
+
+if value is again odd then add one more jump and we get our answer.
+
+
+int X = 25;
+
+int jump = 0;
+while(getSum(jump) < X) {
+    jump++;
+}
+
+if (getSum(jump) == X) {
+    System.out.println(jump);
+    System.exit(0);
+}
+
+if (getSum(jump) > X) {
+    if ((getSum(jump) - X)%2 == 0) {
+        System.out.println(jump);
+        System.exit(0);
+    } else {
+        if ((getSum(jump+1) - X)%2 == 0) {
+            System.out.println(jump+1);
+            System.exit(0);
+        } else {
+            System.out.println(jump+2);
+        }
+    }
+}
+
+```
