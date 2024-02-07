@@ -1107,3 +1107,828 @@ if (getSum(jump) > X) {
 }
 
 ```
+
+### Maximum Product of Three Numbers(https://leetcode.com/problems/maximum-product-of-three-numbers/)
+
+```
+Given an integer array nums, find three numbers whose product is maximum and return the maximum product.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: 6
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: 24
+Example 3:
+
+Input: nums = [-1,-2,-3]
+Output: -6
+ 
+
+Constraints:
+
+3 <= nums.length <= 104
+-1000 <= nums[i] <= 1000
+
+
+Solution:
+The most simple approach will be finding first three maximum values in array and then multiplying them. But this will not work when array contains negative element. So, to handle this case we need to find two minimum elements as firstMin and secondMin of array. We need to find two elements only because the product of three negative nubers will always be negative. So, there can be chances that first 2 mins can be negative and high.
+
+Example : [1, 2, 3, 4, 5, 6, -7, -8]
+
+Here, 
+max1 = 6        min1 = -7
+max2 = 5        min2 = -8
+max3 = 4
+
+Ans = Math.max(max1*max2*max3, min1*min2*max1);
+
+To find these values can traverse the array and find all
+All values initialised with Integer min and Integer max accordingly
+
+value = nums[i]
+
+if value >= max1
+  max3 = max2
+  max2 = max1
+  max1 = value
+else if value >= max2
+  max3 = max2
+  max2 = value
+else if value >= max3
+  max3 = value
+
+if value <= min1
+  min2 = min1
+  min1 = value
+else if value <= min2
+  min2 = value
+
+return Math.max(max1*max2*max3, min1*min2*max1);
+```
+
+### Sort array by Parity (https://leetcode.com/problems/sort-array-by-parity/)
+
+```
+Given an integer array nums, move all the even integers at the beginning of the array followed by all the odd integers.
+
+Return any array that satisfies this condition.
+
+ 
+
+Example 1:
+
+Input: nums = [3,1,2,4]
+Output: [2,4,3,1]
+Explanation: The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.
+Example 2:
+
+Input: nums = [0]
+Output: [0]
+ 
+
+Constraints:
+
+1 <= nums.length <= 5000
+0 <= nums[i] <= 5000
+
+Solution :- 
+
+Take two pointers i =0  and j as arr.length - 1
+Start a loop i < j
+if numbers at both indexes are odd then decrement j
+
+if numbers at both indexes are even then increment i
+
+if number at ith index is odd and jth index is even
+Then swap the number and increment i and decrement j
+
+if number at ith index is event and jth index is odd
+then increment i and decrement j
+
+
+class Solution {
+    public int[] sortArrayByParity(int[] nums) {
+        int[] ans = new int[nums.length];
+        
+        ans = Arrays.copyOf(nums, nums.length);
+        
+        
+        int i = 0;
+        int j = nums.length-1;
+        
+        while (i <= j) {
+            if (ans[i] % 2 != 0 && ans[j] % 2 != 0) {
+                j--;
+            } else if (ans[i] % 2 == 0 && ans[j] % 2 == 0) {
+                i++;
+            } else if (ans[j] % 2 == 0 && ans[i] % 2 != 0) {
+                int temp = ans[j];
+                ans[j] = ans[i];
+                ans[i] = temp;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        
+        return ans;
+    }
+} 
+```
+
+### Best Meeting Point(https://www.geeksforgeeks.org/best-meeting-point-2d-binary-array/)
+
+```
+You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in a group. And the group of two or more people wants to meet and minimize the total travel distance. They can meet anywhere means that there might be a home or not.
+
+The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x – p1.x| + |p2.y – p1.y|.
+Find the total distance that needs to be traveled to reach the best meeting point (Total distance traveled is minimum).
+Examples: 
+
+Input : grid[][] = {{1, 0, 0, 0, 1}, 
+                   {0, 0, 0, 0, 0},
+                   {0, 0, 1, 0, 0}};
+Output : 6
+Best meeting point is (0, 2).
+Total distance traveled is 2 + 2 + 2 = 6
+
+Input : grid[3][5] = {{1, 0, 1, 0, 1},
+                     {0, 1, 0, 0, 0}, 
+                     {0, 1, 1, 0, 0}};
+Output : 11
+
+
+Solution:
+The best meeting point can be found by finding a distance from median. Median can be found in sorted arrays only. We can fill the x-coordinates and y-coordinates in sorted order just by traversing the array accordingly.
+
+public class Main {
+    public static void main(String[] args) {
+        int[][] arr = {{1, 0, 1, 0, 1},
+                     {0, 1, 0, 0, 0}, 
+                     {0, 1, 1, 0, 0}};
+        
+        List<Integer> xArr = new ArrayList<>();
+        List<Integer> yArr = new ArrayList<>();
+        
+        <!-- Finding x coordinates to get median of x -->
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                if (arr[i][j] == 1) {
+                    xArr.add(i);
+                }
+            }
+        }
+        
+        <!-- Finding y coordinates to get median of y -->
+        for (int i = 0; i < arr[0].length; i++) {
+            for (int j = 0; j < arr.length; j++) {
+                if (arr[j][i] == 1) {
+                    yArr.add(i);
+                }
+            }
+        }
+        
+        <!-- Find the median of x and y(Both of the medians can be found for even and odd arrays in same way) -->
+        int medianX = xArr.get((xArr.size())/2);
+        int medianY = yArr.get((yArr.size())/2);
+        int ans = 0;
+
+        <!-- Find the ans by finding distance from both the medians -->
+        for (int i = 0; i < xArr.size(); i++) {
+            ans += Math.abs(xArr.get(i) - medianX);
+        }
+        
+        for (int i = 0; i < yArr.size(); i++) {
+            ans += Math.abs(yArr.get(i) - medianY);
+        }
+        
+        System.out.println(ans);
+    }
+}
+```
+
+### Sieve of Eratosthenes(https://leetcode.com/problems/count-primes/)
+
+```
+Given an integer n, return the number of prime numbers that are strictly less than n.
+
+ 
+
+Example 1:
+
+Input: n = 10
+Output: 4
+Explanation: There are 4 prime numbers less than 10, they are 2, 3, 5, 7.
+Example 2:
+
+Input: n = 0
+Output: 0
+Example 3:
+
+Input: n = 1
+Output: 0
+
+Solution:
+Sieve of eratosthenes is a very popular algorithm which says that
+we should precompute the prime numbers and then we can provide the
+answer in very less time. 
+So here we created one boolean array of length n+1 to calculate
+which all numbers are prime. Intially the array is intialised
+with true boolean value
+Then we can start a loop from i = 2 to till square root of n and check which all numbers are intialised  as true
+
+Example :
+For i = 2,
+if (isPrime[i] == true) // Yes it is true since complete array is initialised as true
+that means , 2 is considered as prime and all factors of 2 will be marked as false, Since they are not prime
+
+For i = 3,
+isPrime[i] is equals to true
+So, marking all the factors of 3 as non prime till n
+
+For i = 4,
+isPrime[i] ois equals to false since it is factor of 2. when we mark the factor of 2 as non prime. It will automatically mark the factors of 4 as non prime
+
+... and vice versa
+
+And then we can calculate the count of prime numbers which are less than n
+
+class Solution {
+    public int countPrimes(int n) {
+        boolean[] isPrime = new boolean[n+1];
+        
+        Arrays.fill(isPrime, true);
+        
+        for (int i = 2; i*i <= isPrime.length; i++) {
+            if (isPrime[i] == true) {
+                for (int j = i+i; j < isPrime.length; j+=i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+        
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (isPrime[i]) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+``` 
+
+### Transpose of a matrix M*N (https://leetcode.com/problems/transpose-matrix/)
+
+```
+Given a 2D integer array matrix, return the transpose of matrix.
+
+The transpose of a matrix is the matrix flipped over its main diagonal, switching the matrix's row and column indices.
+
+Example 1:
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [[1,4,7],[2,5,8],[3,6,9]]
+Example 2:
+
+Input: matrix = [[1,2,3],[4,5,6]]
+Output: [[1,4],[2,5],[3,6]]
+
+
+Solution:
+Create a 2d array of N * M.
+Fill it with oppposite indexes 
+Like at (0, 1) position we need to fill the element present at (1, 0) position
+
+
+class Solution {
+    public int[][] transpose(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        
+        int[][] res = new int[n][m];
+        
+        for (int i = 0; i < res.length; i++) {
+            for (int j = 0; j < res[0].length; j++) {
+                res[i][j] = matrix[j][i];
+            }
+        }
+        
+        return res;
+    }
+}
+
+```
+
+### Transpose of a Matrix(N*N)(inplace)
+
+```
+Here we need to find transpose of a matrix who has same number 
+of rows and columns. This can be easy as we need not to traverse 
+the complete matrix to achieve this.
+
+[
+  [11, 12, 13],
+  [21, 22, 23],
+  [31, 32, 33]
+]
+
+Transpose would be
+
+[
+  [11, 21, 31],
+  [12, 22, 32],
+  [13, 23, 33]
+]
+
+
+So if we observe the diagonal elements are same and elements present
+after diagonal are swapped with the elements present before diagonal
+
+So, we can maintain the loop till diagonal and can swap the elements
+with their opposite indexes
+
+Psuedocode:
+  for (int i =0; i < n; i++) {
+    for (int j = i; j < n; j++) {
+      swap matrix[i][j] with matrix[j][i]
+    }
+  }
+
+At the end, the new matrix generated will be a transpose matrix
+
+```
+
+### Shortest unsorted continuous subarray(https://leetcode.com/problems/shortest-unsorted-continuous-subarray/)
+
+```
+Given an integer array nums, you need to find one continuous subarray such that if you only sort this subarray in non-decreasing order, then the whole array will be sorted in non-decreasing order.
+
+Return the shortest such subarray and output its length.
+
+ 
+
+Example 1:
+
+Input: nums = [2,6,4,8,10,9,15]
+Output: 5
+Explanation: You need to sort [6, 4, 8, 10, 9] in ascending order to make the whole array sorted in ascending order.
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: 0
+Example 3:
+
+Input: nums = [1]
+Output: 0
+ 
+
+Constraints:
+
+1 <= nums.length <= 104
+-105 <= nums[i] <= 105
+
+Solution:
+we need to find a number which is smaller then any element 
+present to its left
+
+For ex:-[2,6,4,8,10,9,15], Here 9 is the first element which is 
+smaller then the 10 present at its left. So, what we can do we can maintain a max variable from starting and keep checking that if there is any value which is smaller then the elements present in left
+
+We need to find a number which is greater then any element present
+to its right.
+
+For ex:-[2,6,4,8,10,9,15], Here 6 is the first element which is
+greater then the 4 present at its right. So, what we can do is we can maintain min variable from ending of array and keep checking that
+if there is any value which is greater then the elements present in right
+
+The difference between indexes of both these numbers + 1 will give us the length of shortest unsorted continuous subarray
+
+
+class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        int end = -1;
+        int max = nums[0];
+        
+        for (int i = 1; i < nums.length; i++) {
+            if (max > nums[i]) {
+                end = i;
+            } else {
+                max = nums[i];
+            }
+        }
+        
+        int start = 0;
+        int min = nums[nums.length-1];
+        for (int i = nums.length-2; i >= 0; i--) {
+            if (min < nums[i]) {
+                start = i;
+            } else {
+                min = nums[i];
+            }
+        }
+        
+        return end - start + 1;
+    }
+}
+
+```
+
+### Rotate a matrix by 90 degree (https://leetcode.com/problems/rotate-image/submissions/)
+
+```
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
+
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+
+Example 1:
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [[7,4,1],[8,5,2],[9,6,3]]
+
+
+Example 2:
+Input: matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+Output: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+ 
+
+Constraints:
+
+n == matrix.length == matrix[i].length
+1 <= n <= 20
+-1000 <= matrix[i][j] <= 1000
+
+Solution :-
+
+Find transpose of a matrix .
+
+[
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+
+Transpose :- 
+[
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9]
+]
+
+Then reverse every row of the matrix:
+
+[
+  [7, 4, 1],
+  [8, 5, 2],
+  [9, 6, 3]
+]
+
+
+class Solution {
+    public void rotate(int[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j =  i;  j < arr[0].length; j++) {
+                int temp = arr[i][j];
+                arr[i][j] = arr[j][i];
+                arr[j][i] = temp;
+            }
+        }
+        
+        for (int i = 0; i < arr.length; i++) {
+            int start = 0;
+            int end = arr[0].length-1;
+            
+            while (start < end) {
+                int temp = arr[i][start];
+                arr[i][start] = arr[i][end];
+                arr[i][end] = temp;
+                start++;
+                end--;
+            }
+        }
+    }
+}
+```
+
+### Reverse vowels of a string(https://leetcode.com/problems/reverse-vowels-of-a-string/)
+
+```
+Given a string s, reverse only all the vowels in the string and return it.
+
+The vowels are 'a', 'e', 'i', 'o', and 'u', and they can appear in both lower and upper cases, more than once.
+
+ 
+
+Example 1:
+
+Input: s = "hello"
+Output: "holle"
+Example 2:
+
+Input: s = "leetcode"
+Output: "leotcede"
+ 
+
+Constraints:
+
+1 <= s.length <= 3 * 105
+s consist of printable ASCII characters.
+
+Solution:
+Convert the given string into character array
+
+And then traverse with two pointer approach recognising if there
+is vowels then swap the left and right pointers. 
+
+class Solution {
+    public String reverseVowels(String s) {
+        char[] arr = s.toCharArray();
+        
+        int start = 0;
+        int end = arr.length-1;
+        
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put('a', 1);
+        map.put('e', 1);
+        map.put('i', 1);
+        map.put('o', 1);
+        map.put('u', 1);
+        map.put('A', 1);
+        map.put('E', 1);
+        map.put('I', 1);
+        map.put('O', 1);
+        map.put('U', 1);
+        
+        while (start < end) {
+            if (map.containsKey(arr[start]) && map.containsKey(arr[end])) {
+                char temp = arr[start];
+                arr[start] = arr[end];
+                arr[end] = temp;
+                start++;
+                end--;
+            } else if(map.containsKey(arr[start])) {
+                end--;
+            } else if(map.containsKey(arr[end])) {
+                start++;
+            } else {
+                start++;
+                end--;
+            }
+        }
+        
+        return new String(arr);
+    }
+}
+```
+
+### Wiggle Sort(https://www.codingninjas.com/studio/problems/wiggle-sort_3155169?leftPanelTabValue=PROBLEM&count=25&page=1&search=&sort_entity=order&sort_order=ASC&attempt_status=COMPLETED)
+
+```
+Problem statement
+You are given an array ‘ARR’ containing ‘N’ integers, you need to sort the array such that a wiggle sequence is formed. A wiggle sequence satisfies the following property: ARR[0] ≤ ARR[1] ≥ ARR[2] ≤ ARR[3] ≥ ARR[4] ≤ ARR[5] …..
+
+If there are multiple answers, you may print any of them.
+
+Follow up :
+Can you try to solve this problem in O(N) time without using extra space?
+Custom Input :
+Kindly use print statements to debug the code and print array.
+Example :
+If ‘N’ = 5 and ‘ARR’ = { 1, 2, 3, 4, 5 }
+
+Then rearranging the input array to { 1, 4, 2, 5, 3 } create a wiggle sequence.
+
+Other rearrangements like { 2, 4, 3, 5, 1 }, { 3, 5, 1, 4, 2} are also considered correct.
+Detailed explanation ( Input/output format, Notes, Images )
+Constraints :
+1 ≤ T ≤ 10      
+1 ≤ N ≤ 5000
+-10^9 ≤ ARR[i] ≤ 10^9
+
+Time limit: 1 sec
+Sample Input 1 :
+2
+5
+1 2 3 4 5
+4
+1 3 2 2 
+Sample Output 1 :
+1 4 2 5 3
+1 3 2 2
+Explanation For Sample Input 1 :
+For test case 1 :
+We will print {1, 4, 2, 5, 3} as it is a valid rearrangement of the input array and is a wiggle sequence.
+
+For test case 2 : 
+The input array is itself a wiggle sequence, so we can directly return it.
+Sample Input 2 :
+2
+5
+1 1 1 1 1
+2
+1 2 
+Sample Output 2 :
+1 1 1 1 1
+1 2
+
+
+Solution :
+Sort a array in a wave traversal
+
+arr[0] <= arr[1] >= arr[2] <= arr[3] >= arr[4]
+
+Here uf we observe that every even index is smaller element and
+every odd index is a bigger element. So, what we can do is we can
+traverse the array and check if we are on even index or odd index.
+
+if we are on even index we can check if next element is smaller. If 
+it is then we need to swap it with current index
+
+If we are on odd index we can check if next element is greater. If it is then we need to swap it with current index.
+
+[1, 2, 3, 4, 5]
+
+for i = 0
+since 1 is <=2 we will continue
+
+for i = 1
+since 2 is <= 3 we will swap it. Now, since 2 is less then 3 and is greater then 1 already then it is obvious that 3 will be greater then 1. That's how this algo is managing the previous elements
+
+import java.util.* ;
+import java.io.*; 
+public class Solution {
+	public static int[] wiggleSort(int n, int[] arr) {
+		// Write your code here.
+
+		for (int i = 0; i < arr.length-1; i++) {
+			if (i % 2 == 0) {
+				if (arr[i+1] <= arr[i]) {
+					int temp = arr[i+1];
+					arr[i+1] = arr[i];
+					arr[i] = temp;
+				}
+			} else {
+				if (arr[i+1] >= arr[i]) {
+					int temp = arr[i+1];
+					arr[i+1] = arr[i];
+					arr[i] = temp;
+				}
+			}
+		}
+
+		return arr;
+	}
+}
+```
+
+### Wiggle Sort 2(https://leetcode.com/problems/wiggle-sort/)
+
+```
+Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+
+You may assume the input array always has a valid answer.
+
+ 
+
+Example 1:
+
+Input: nums = [1,5,1,1,6,4]
+Output: [1,6,1,5,1,4]
+Explanation: [1,4,1,5,1,6] is also accepted.
+Example 2:
+
+Input: nums = [1,3,2,2,3,1]
+Output: [2,3,1,3,1,2]
+
+Solution :- 
+
+Create a new array of n size.
+Copy all the elements of input array into new array
+
+Then, Sort the newly created array.
+
+Put a pointer at last of sorted array,
+And then start filling the odd indexes of the input array by max 
+value elements. 
+
+Ones filled take yout pointer to the even indexes of the input array
+and fill them by min value elements
+
+Example :- 
+input array - [1, 5, 1, 1, 6, 4]
+sorted array - [1, 1, 1, 4, 5, 6]
+
+Now putting j pointer ar the last of sorted array
+Start a loop while j >= 0
+
+Then start with i=1 and while i <  nums.length and j >= 0
+Fill inputArray[i] = sortedArray[j] with decreasing j by 1 and increasing i by 2
+
+Ones filled we can move to even indexes and start with i = 0 without changing the position of j, as j will be at the maximum value of the minimum value numbers
+
+Start i = 0
+while i < nums.length and j >= 0
+Fill inputArray[i] = sortedArray[j] with decreasing j by 1 and increasing i by 2.
+
+class Solution {
+    public void wiggleSort(int[] nums) {
+        int[] ans = new int[nums.length];
+        
+        ans = nums.clone();
+        
+        Arrays.sort(ans);
+        
+        int j = ans.length -1;
+        while (j >= 0) {
+            int i = 1;
+            while (i < nums.length && j >= 0) {
+                nums[i] = ans[j];
+                j--;
+                i+=2;
+            }
+            
+            i = 0;
+            while (i < nums.length && j >= 0) {
+                nums[i] = ans[j];
+                j--;
+                i+=2;
+            }
+            
+            j--;
+        }
+        
+    }
+}
+```
+
+### Add Strings(https://leetcode.com/problems/add-strings/)
+
+```
+Given two non-negative integers, num1 and num2 represented as string, return the sum of num1 and num2 as a string.
+
+You must solve the problem without using any built-in library for handling large integers (such as BigInteger). You must also not convert the inputs to integers directly.
+
+ 
+
+Example 1:
+
+Input: num1 = "11", num2 = "123"
+Output: "134"
+Example 2:
+
+Input: num1 = "456", num2 = "77"
+Output: "533"
+Example 3:
+
+Input: num1 = "0", num2 = "0"
+Output: "0"
+
+Solution :- 
+Put two pointers i and j at the end of both inputs, Start traversing till the length of both inputs become zero and also the value of carry
+should be 0. 
+
+So, example 
+num1 = "11"
+num2 = "123"
+
+i = 1 and j = 2
+
+We need to calculate iVal = "1" - "0" = 1 and jVal = "3" - "0" = 3
+So sum is iVal + jVal + carry
+Then carry comes out to be division of sum by 10
+And Res should be module of sum by 10
+
+class Solution {
+    public String addStrings(String num1, String num2) {
+        String res = "";
+        
+        int i = num1.length()-1;
+        int j = num2.length()-1;
+        int carry = 0;
+        
+        while(i >= 0 || j >= 0 || carry != 0) {
+            int iVal = 0;
+            int jVal = 0;
+            int sum = 0;
+
+            
+            if (i >= 0) iVal = num1.charAt(i) - '0';
+            if (j >= 0) jVal = num2.charAt(j) - '0';
+            sum += iVal + jVal + carry;
+            carry = sum/10;
+            res = (sum%10) + res;
+            i--;
+            j--;
+        }
+        
+        return res;
+    }
+}
+```
+
+
